@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isabella's Circle · Know Yourself</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:#0e0c14;--surface:#17131f;--surface2:#1f1a2e;
+    --gold:#d4a843;--gold-light:#e8c97a;--gold-dim:rgba(212,168,67,0.15);
+    --rose:#c47888;--rose-light:#e8a4b4;--rose-dim:rgba(196,120,136,0.15);
+    --teal:#5a9e98;--teal-light:#7dc4bc;
+    --violet:#8b78c4;--violet-light:#b4a0e0;
+    --text:#f0eae0;--text-soft:#b0a898;--text-dim:#6e6458;
+    --border:rgba(255,255,255,0.07);--white:#ffffff;
+    --green:#4caf7d;--green-dim:rgba(76,175,125,0.15);
+  }
+  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+  body::before {
+    content:''; position:fixed; inset:0;
+    background-image:
+      radial-gradient(1px 1px at 15% 18%,rgba(255,255,255,.35) 0%,transparent 100%),
+      radial-gradient(1px 1px at 72% 8%,rgba(255,255,255,.28) 0%,transparent 100%),
+      radial-gradient(1px 1px at 88% 35%,rgba(255,255,255,.22) 0%,transparent 100%),
+      radial-gradient(1px 1px at 33% 72%,rgba(255,255,255,.18) 0%,transparent 100%),
+      radial-gradient(1px 1px at 60% 55%,rgba(255,255,255,.15) 0%,transparent 100%),
+      radial-gradient(1px 1px at 8% 90%,rgba(255,255,255,.2) 0%,transparent 100%),
+      radial-gradient(200px 200px at 80% 10%,rgba(212,168,67,.05) 0%,transparent 100%),
+      radial-gradient(200px 200px at 20% 80%,rgba(196,120,136,.06) 0%,transparent 100%);
+    pointer-events:none; z-index:0;
+  }
+  * { position:relative; z-index:1; }
+
+  header { text-align:center; padding:3rem 1.5rem 1rem; }
+  .crown-tag { display:inline-flex;align-items:center;gap:.5rem;font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);border:1px solid rgba(212,168,67,.3);border-radius:4px;padding:.28rem .9rem;margin-bottom:1.4rem;background:var(--gold-dim); }
+  h1 { font-family:'Libre Baskerville',serif;font-weight:400;font-size:clamp(2rem,6.5vw,3.4rem);line-height:1.08;letter-spacing:-.01em; }
+  h1 .name { font-style:italic;background:linear-gradient(135deg,var(--gold-light) 0%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block; }
+  .hero-tagline { font-size:.78rem;color:var(--text-soft);margin:.8rem auto 0;line-height:1.7;max-width:270px;font-weight:300; }
+  .gold-line { width:48px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:1.3rem auto 0; }
+  .intro-note { margin:1.5rem auto 0;max-width:360px;background:var(--surface);border:1px solid var(--border);border-top:1px solid rgba(212,168,67,.2);border-radius:12px;padding:1rem 1.3rem;font-size:.76rem;line-height:1.75;color:var(--text-soft);text-align:center; }
+  .intro-note strong { color:var(--gold);font-weight:600; }
+
+  /* TABS */
+  .tab-bar { display:flex;max-width:400px;margin:1.8rem auto 0;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;gap:4px; }
+  .tab-btn { flex:1;padding:.5rem .3rem;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:transparent;color:var(--text-dim);transition:background .2s,color .2s; }
+  .tab-btn.active { background:var(--surface2);color:var(--gold); }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+
+  /* WHEEL */
+  .wheel-section { display:flex;flex-direction:column;align-items:center;padding:2.2rem 1rem 1rem;gap:1.6rem; }
+  .wheel-container { position:relative;width:min(310px,86vw);height:min(310px,86vw);filter:drop-shadow(0 0 40px rgba(212,168,67,.12)) drop-shadow(0 12px 32px rgba(0,0,0,.5)); }
+  svg.wheel { width:100%;height:100%; }
+  .phase-slice { cursor:pointer;transition:filter .25s; }
+  .phase-slice:hover { filter:brightness(1.18) saturate(1.1); }
+  .phase-slice.active { filter:brightness(1.22) saturate(1.2); }
+  .center-circle { position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36%;height:36%;background:var(--bg);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1px solid rgba(212,168,67,.25);pointer-events:none;padding:.4rem; }
+  .center-name { font-family:'Libre Baskerville',serif;font-style:italic;font-size:.5rem;color:var(--gold);letter-spacing:.08em; }
+  .center-day { font-family:'Libre Baskerville',serif;font-size:1.45rem;font-weight:700;line-height:1;transition:color .3s; }
+  .center-sub { font-size:.44rem;color:var(--text-dim);letter-spacing:.08em;text-transform:uppercase; }
+  .day-input-wrap { width:min(310px,86vw);display:flex;flex-direction:column;gap:.5rem; }
+  .day-input-wrap label { font-size:.65rem;letter-spacing:.18em;color:var(--text-dim);text-transform:uppercase; }
+  input[type=range] { width:100%;appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,var(--rose),var(--violet),var(--gold));outline:none; }
+  input[type=range]::-webkit-slider-thumb { appearance:none;width:18px;height:18px;border-radius:50%;background:var(--bg);cursor:pointer;border:2px solid var(--gold);box-shadow:0 0 8px rgba(212,168,67,.4); }
+  .day-display { font-family:'Libre Baskerville',serif;font-style:italic;font-size:.95rem;color:var(--text-soft); }
+
+  /* PHASE CARD */
+  .phase-card { width:min(380px,96vw);border-radius:16px;overflow:hidden;border:1px solid var(--border);margin:.5rem auto 0;background:var(--surface); }
+  .phase-header { padding:1.5rem 1.6rem 1.1rem;display:flex;align-items:flex-start;gap:1rem;border-bottom:1px solid var(--border); }
+  .phase-icon-wrap { width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;border:1px solid var(--border); }
+  .phase-name { font-family:'Libre Baskerville',serif;font-size:1.35rem;font-weight:700;line-height:1.15; }
+  .phase-days-tag { display:inline-block;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;padding:.16rem .55rem;border-radius:4px;margin-top:.3rem;font-weight:600;border:1px solid; }
+  .phase-vibe { font-size:.72rem;line-height:1.5;color:var(--text-soft);margin-top:.35rem;font-weight:300; }
+  .self-note { margin:1rem 1.5rem 0;padding:.9rem 1rem;border-radius:10px;background:var(--surface2);font-size:.76rem;line-height:1.72;font-style:italic;color:var(--text-soft);border-left:3px solid; }
+  .phase-body { padding:.9rem 1.5rem 1.6rem;display:flex;flex-direction:column;gap:1rem; }
+  .section-label { font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.45rem;font-weight:600; }
+  .mood-tags { display:flex;flex-wrap:wrap;gap:.38rem; }
+  .tag { font-size:.7rem;padding:.24rem .65rem;border-radius:4px;font-weight:500;border:1px solid; }
+  .insight-list { display:flex;flex-direction:column;gap:.6rem; }
+  .insight-item { display:flex;gap:.6rem;align-items:flex-start;font-size:.78rem;line-height:1.6;color:var(--text-soft); }
+  .ins-icon { flex-shrink:0;font-size:.95rem;margin-top:.08rem; }
+  .need-list { display:flex;flex-direction:column;gap:.38rem; }
+  .need-item { font-size:.76rem;line-height:1.55;padding:.48rem .75rem;border-radius:8px;background:var(--surface2);border-left:2px solid;color:var(--text-soft); }
+  .affirmation { font-family:'Libre Baskerville',serif;font-style:italic;font-size:1rem;line-height:1.62;text-align:center;padding:.4rem .2rem; }
+  .divider { height:1px;background:var(--border); }
+  .phase-nav { display:flex;justify-content:center;gap:.55rem;padding:1.2rem .8rem .5rem;flex-wrap:wrap; }
+  .nav-pill { font-size:.65rem;font-weight:600;letter-spacing:.1em;padding:.3rem .8rem;border-radius:4px;border:1px solid rgba(255,255,255,.1);cursor:pointer;opacity:.38;transition:opacity .2s,transform .2s;font-family:'Inter',sans-serif;color:var(--text);background:var(--surface);text-transform:uppercase; }
+  .nav-pill.active { opacity:1;transform:scale(1.05);border-color:rgba(255,255,255,.25); }
+
+  /* CALCULATOR */
+  .calc-wrap { max-width:380px;margin:0 auto;padding:1.2rem 1rem 2rem;display:flex;flex-direction:column;gap:1rem; }
+  .calc-card { background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden; }
+  .calc-card-header { padding:1rem 1.2rem .8rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem; }
+  .ch-icon { font-size:1.2rem; }
+  .calc-card-title { font-family:'Libre Baskerville',serif;font-size:1rem;font-weight:700; }
+  .calc-card-sub { font-size:.7rem;color:var(--text-dim);margin-top:.1rem; }
+  .calc-inputs { padding:1rem 1.2rem;display:flex;flex-direction:column;gap:.8rem; }
+  .input-row { display:flex;flex-direction:column;gap:.3rem; }
+  .input-row label { font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);font-weight:600; }
+  .input-row input[type=date],.input-row input[type=number],.input-row select { background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:.82rem;padding:.55rem .75rem;outline:none;width:100%;-webkit-appearance:none;appearance:none; }
+  .input-row input[type=date]:focus,.input-row input[type=number]:focus { border-color:rgba(212,168,67,.4); }
+  .input-row input[type=date]::-webkit-calendar-picker-indicator { filter:invert(.6);cursor:pointer; }
+  .two-col { display:grid;grid-template-columns:1fr 1fr;gap:.6rem; }
+  .calc-btn { width:100%;padding:.75rem;border:none;border-radius:10px;background:linear-gradient(135deg,var(--gold) 0%,#b88a2a 100%);color:#0e0c14;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .15s;margin-top:.2rem; }
+  .calc-btn:hover { opacity:.9;transform:translateY(-1px); }
+
+  /* RESULTS */
+  .results-section { display:none;flex-direction:column;gap:.8rem; }
+  .results-section.visible { display:flex; }
+  .result-banner { border-radius:12px;padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:.75rem;border:1px solid; }
+  .rb-icon { font-size:1.4rem;flex-shrink:0;margin-top:.1rem; }
+  .rb-label { font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-bottom:.2rem; }
+  .rb-value { font-family:'Libre Baskerville',serif;font-size:1.05rem;font-weight:700;line-height:1.3; }
+  .rb-note { font-size:.7rem;color:var(--text-soft);margin-top:.2rem;line-height:1.5; }
+  .rb-period  { background:rgba(196,120,136,.1);border-color:rgba(196,120,136,.3); }
+  .rb-period .rb-label,.rb-period .rb-value { color:var(--rose-light); }
+  .rb-fertile { background:rgba(90,158,152,.1);border-color:rgba(90,158,152,.3); }
+  .rb-fertile .rb-label,.rb-fertile .rb-value { color:var(--teal-light); }
+  .rb-ovulate { background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.3); }
+  .rb-ovulate .rb-label,.rb-ovulate .rb-value { color:var(--gold-light); }
+  .rb-safe    { background:rgba(139,120,196,.1);border-color:rgba(139,120,196,.3); }
+  .rb-safe .rb-label,.rb-safe .rb-value { color:var(--violet-light); }
+  .rb-pms     { background:rgba(180,140,80,.1);border-color:rgba(180,140,80,.3); }
+  .rb-pms .rb-label,.rb-pms .rb-value { color:#d4b870; }
+
+  /* FORECAST */
+  .forecast-card { background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden; }
+  .forecast-title { padding:.9rem 1.2rem;border-bottom:1px solid var(--border);font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700; }
+  .forecast-body { padding:1rem 1.2rem;display:flex;flex-direction:column;gap:.8rem; }
+  .forecast-month-name { font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;font-weight:600; }
+  .cal-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:2px; }
+  .cal-day-head { font-size:.52rem;text-align:center;color:var(--text-dim);text-transform:uppercase;padding-bottom:4px;letter-spacing:.05em; }
+  .cal-day { aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:.62rem;font-weight:500;color:var(--text-dim); }
+  .cal-day.period { background:rgba(196,120,136,.25);color:var(--rose-light);font-weight:700; }
+  .cal-day.fertile { background:rgba(90,158,152,.2);color:var(--teal-light); }
+  .cal-day.ovulation { background:rgba(212,168,67,.3);color:var(--gold-light);font-weight:700;border-radius:50%; }
+  .cal-day.pms { background:rgba(180,140,80,.15);color:#d4b870; }
+  .cal-day.today { outline:1px solid rgba(212,168,67,.5); }
+  .legend { display:flex;flex-wrap:wrap;gap:.5rem .8rem;padding:.6rem 1.2rem; }
+  .legend-item { display:flex;align-items:center;gap:.3rem;font-size:.62rem;color:var(--text-soft); }
+  .legend-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+  .disclaimer { font-size:.66rem;color:var(--text-dim);line-height:1.6;padding:.8rem 1.2rem;border-top:1px solid var(--border);text-align:center;font-style:italic; }
+
+  /* ── HISTORY / ADMIN TABLE ── */
+  .history-card { background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden; }
+  .history-header { padding:.9rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
+  .history-title { font-family:'Libre Baskerville',serif;font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.5rem; }
+  .history-count { font-size:.65rem;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(212,168,67,.3);border-radius:10px;padding:.1rem .5rem;font-weight:600; }
+  .clear-btn { font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.28rem .7rem;border:1px solid rgba(196,120,136,.3);border-radius:6px;background:rgba(196,120,136,.1);color:var(--rose-light);cursor:pointer;font-family:'Inter',sans-serif; }
+  .clear-btn:hover { background:rgba(196,120,136,.2); }
+  .history-loading { padding:1.5rem;text-align:center;font-size:.75rem;color:var(--text-dim);font-style:italic; }
+  .history-empty { padding:1.5rem;text-align:center;font-size:.75rem;color:var(--text-dim);font-style:italic; }
+
+  /* Table */
+  .tbl-wrap { overflow-x:auto; }
+  table { width:100%;border-collapse:collapse;font-size:.7rem; }
+  thead tr { border-bottom:1px solid var(--border); }
+  th { padding:.55rem .7rem;text-align:left;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);font-weight:600;white-space:nowrap; }
+  tbody tr { border-bottom:1px solid rgba(255,255,255,.03); }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:rgba(255,255,255,.02); }
+  td { padding:.55rem .7rem;color:var(--text-soft);vertical-align:top;white-space:nowrap; }
+  td.date-cell { color:var(--text); }
+  .badge { display:inline-block;font-size:.58rem;font-weight:600;padding:.12rem .45rem;border-radius:4px;border:1px solid; }
+  .badge-rose   { background:rgba(196,120,136,.15);color:var(--rose-light);border-color:rgba(196,120,136,.3); }
+  .badge-teal   { background:rgba(90,158,152,.15);color:var(--teal-light);border-color:rgba(90,158,152,.3); }
+  .badge-gold   { background:rgba(212,168,67,.15);color:var(--gold-light);border-color:rgba(212,168,67,.3); }
+  .badge-violet { background:rgba(139,120,196,.15);color:var(--violet-light);border-color:rgba(139,120,196,.3); }
+  .delete-row { background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.8rem;padding:.1rem .3rem;border-radius:4px; }
+  .delete-row:hover { color:var(--rose-light);background:rgba(196,120,136,.1); }
+
+  /* save toast */
+  .toast { position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid rgba(76,175,125,.35);color:#6fcf97;font-size:.74rem;padding:.6rem 1.2rem;border-radius:8px;opacity:0;transition:opacity .3s,transform .3s;z-index:999;pointer-events:none;white-space:nowrap; }
+  .toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+
+  footer { text-align:center;padding:1.8rem 1rem 2.4rem;font-family:'Libre Baskerville',serif;font-style:italic;font-size:.78rem;color:var(--text-dim);border-top:1px solid var(--border);margin-top:1rem; }
+  footer .from { display:block;margin-top:.5rem;font-size:.65rem;color:rgba(212,168,67,.55);letter-spacing:.15em;font-style:normal;text-transform:uppercase; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)} }
+  .phase-card,.results-section,.history-card { animation:fadeUp .36s ease forwards; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="crown-tag">✦ A guide made with love ✦</div>
+  <h1>Understanding<br><span class="name">Isabella</span></h1>
+  <p class="hero-tagline">Your moods aren't random, my love — they follow a beautiful, ancient rhythm.</p>
+  <div class="gold-line"></div>
+</header>
+
+<div class="intro-note">Your body moves through <strong>4 phases</strong> every month, each one shaping how you feel, think, and connect. 🌙</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('mood',this)">🌙 Mood</button>
+  <button class="tab-btn" onclick="switchTab('calc',this)">🌸 Calculator</button>
+  <button class="tab-btn" onclick="switchTab('history',this)">📋 History</button>
+</div>
+
+<!-- ── MOOD TAB ── -->
+<div id="tab-mood" class="tab-panel active">
+  <div class="wheel-section">
+    <div class="wheel-container">
+      <svg class="wheel" viewBox="0 0 200 200" id="cycleWheel"></svg>
+      <div class="center-circle">
+        <span class="center-name">Isabella</span>
+        <span class="center-day" id="centerDay">1</span>
+        <span class="center-sub">of 28</span>
+      </div>
+    </div>
+    <div class="day-input-wrap">
+      <label>Move to your cycle day</label>
+      <input type="range" id="daySlider" min="1" max="28" value="1">
+      <span class="day-display" id="dayDisplay">Day 1 · Rest &amp; Release</span>
+    </div>
+  </div>
+  <div id="phaseCard" class="phase-card"></div>
+  <div class="phase-nav" id="phaseNav"></div>
+</div>
+
+<!-- ── CALCULATOR TAB ── -->
+<div id="tab-calc" class="tab-panel">
+  <div class="calc-wrap">
+    <div class="calc-card">
+      <div class="calc-card-header">
+        <span class="ch-icon">🌸</span>
+        <div>
+          <div class="calc-card-title">Period Calculator</div>
+          <div class="calc-card-sub">Fertile window, ovulation, safe days &amp; forecast</div>
+        </div>
+      </div>
+      <div class="calc-inputs">
+        <div class="input-row">
+          <label>First day of last period</label>
+          <input type="date" id="lastPeriod">
+        </div>
+        <div class="two-col">
+          <div class="input-row">
+            <label>Cycle length (days)</label>
+            <input type="number" id="cycleLen" value="28" min="21" max="45">
+          </div>
+          <div class="input-row">
+            <label>Period duration</label>
+            <input type="number" id="periodLen" value="5" min="2" max="10">
+          </div>
+        </div>
+        <button class="calc-btn" onclick="calculate()">✦ Calculate My Cycle</button>
+      </div>
+    </div>
+
+    <div class="results-section" id="resultsSection">
+      <div class="result-banner rb-period">
+        <span class="rb-icon">🌑</span>
+        <div><div class="rb-label">Next Period</div><div class="rb-value" id="val-period">—</div><div class="rb-note" id="note-period">—</div></div>
+      </div>
+      <div class="result-banner rb-fertile">
+        <span class="rb-icon">🌿</span>
+        <div><div class="rb-label">Fertile Window</div><div class="rb-value" id="val-fertile">—</div><div class="rb-note">Highest chance of conception. Sperm can survive 5 days inside the body.</div></div>
+      </div>
+      <div class="result-banner rb-ovulate">
+        <span class="rb-icon">☀️</span>
+        <div><div class="rb-label">Ovulation Day</div><div class="rb-value" id="val-ovulate">—</div><div class="rb-note">Peak fertility. The egg is released and viable for 12–24 hours.</div></div>
+      </div>
+      <div class="result-banner rb-safe">
+        <span class="rb-icon">🛡️</span>
+        <div><div class="rb-label">Relatively Safe Days</div><div class="rb-value" id="val-safe">—</div><div class="rb-note">Lower fertility risk — but no day is 100% safe without contraception.</div></div>
+      </div>
+      <div class="result-banner rb-pms">
+        <span class="rb-icon">🌙</span>
+        <div><div class="rb-label">PMS Window</div><div class="rb-value" id="val-pms">—</div><div class="rb-note">Luteal phase — Isabella may feel more sensitive, tired, or emotional.</div></div>
+      </div>
+      <div class="forecast-card">
+        <div class="forecast-title">📅 3-Month Forecast</div>
+        <div class="forecast-body" id="forecastBody"></div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#c47888"></div> Period</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#5a9e98"></div> Fertile</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#d4a843"></div> Ovulation</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#b48c50"></div> PMS</div>
+        </div>
+        <div class="disclaimer">⚠️ For educational awareness only. Always consult a healthcare provider for medical or contraceptive advice.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HISTORY TAB ── -->
+<div id="tab-history" class="tab-panel">
+  <div class="calc-wrap">
+    <div class="history-card" id="historyCard">
+      <div class="history-header">
+        <div class="history-title">
+          📋 Saved Calculations
+          <span class="history-count" id="historyCount">0</span>
+        </div>
+        <button class="clear-btn" onclick="clearHistory()">Clear All</button>
+      </div>
+      <div id="historyBody"><div class="history-loading">Loading records…</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  You are not too much, Isabella. You are perfectly cyclical.
+  <span class="from">— made with love, just for you</span>
+</footer>
+
+<script>
+/* ─── TAB SWITCHING ─── */
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'history') loadHistory();
+}
+
+/* ─── TOAST ─── */
+function showToast(msg, color='#6fcf97') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.color = color; t.style.borderColor = color + '55';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ─── DB INIT ─── */
+let dbRef = null;
+async function getDb() {
+  if (dbRef) return dbRef;
+  try { dbRef = await claude.use('db'); } catch(e) { dbRef = null; }
+  return dbRef;
+}
+
+/* ─── MOOD WHEEL DATA ─── */
+const phases = [
+  { id:'menstrual', name:'Rest & Release', days:[1,5], icon:'🌑', color:'#c47888', accentColor:'#e8a4b4', bgHeader:'rgba(196,120,136,0.08)', tagBg:'rgba(196,120,136,0.12)', tagBorder:'rgba(196,120,136,0.3)', cycleName:'Menstrual', energy:'Low & inward · Rest is your superpower right now', moods:['Tender','Reflective','Sensitive','Quiet','Dreamy'], selfNote:'Isabella, right now your body is doing deep, powerful work. The tiredness and emotions you feel are real and valid — this is not weakness, this is your body asking to be held gently.', insights:[{icon:'🛁',text:'You deserve rest without guilt. Cancelling plans, lying in bed, doing nothing — all perfectly okay.'},{icon:'💭',text:'Emotions may feel bigger and closer to the surface. That\'s hormones, not you being "too emotional."'},{icon:'🌡️',text:'You may crave warmth — heat pads, warm drinks, comfort food. Listen to that craving.'},{icon:'🎨',text:'If you feel like journaling or being quietly with yourself, lean into it. Your intuition is sharp right now.'}], needs:['Permission to rest — fully and without apologising','Warmth, comfort, and gentleness from yourself and others','Low expectations. No pressure to be "on" for anyone','Nourishing food and lots of water'], affirmation:'"Resting is not lazy. My body is working hard, and I honour that."' },
+  { id:'follicular', name:'Rising & Blooming', days:[6,13], icon:'🌿', color:'#5a9e98', accentColor:'#7dc4bc', bgHeader:'rgba(90,158,152,0.08)', tagBg:'rgba(90,158,152,0.12)', tagBorder:'rgba(90,158,152,0.3)', cycleName:'Follicular', energy:'Rising & bright · You\'re waking up, fresh and curious', moods:['Optimistic','Curious','Playful','Creative','Social','Open'], selfNote:'Isabella, you\'re stepping into your light phase. Your energy is building, your mind is sharp, and you might feel like yourself again after the dip. This is your creative season — use it.', insights:[{icon:'💡',text:'Your mind is quick and open right now. Great time to start new things, make decisions, or learn something.'},{icon:'🗣️',text:'Conversations feel easier and more fun. You\'re more expressive and willing to connect deeply.'},{icon:'🌿',text:'You might feel like moving, exploring, or trying something new. Say yes to that impulse.'},{icon:'✨',text:'This is the best time to communicate something difficult — you\'re clearer and more resilient right now.'}], needs:['New experiences — a walk, a new café, a fresh idea to explore','Creative outlets: writing, cooking, talking, building','Good conversations and quality time with people you love','To start something you\'ve been putting off'], affirmation:'"I am blooming. My ideas are worth pursuing and my voice matters."' },
+  { id:'ovulation', name:'Full Radiance', days:[14,17], icon:'☀️', color:'#d4a843', accentColor:'#e8c97a', bgHeader:'rgba(212,168,67,0.08)', tagBg:'rgba(212,168,67,0.12)', tagBorder:'rgba(212,168,67,0.3)', cycleName:'Ovulation', energy:'Peak radiance · You are magnetic right now', moods:['Confident','Loving','Warm','Bold','Expressive','Joyful'], selfNote:'Isabella, this is your peak — and you can feel it. You\'re magnetic, warm, and at your most communicative. This isn\'t you trying harder; this is your hormones lifting you up. Enjoy it fully.', insights:[{icon:'🔥',text:'You\'re at your most charismatic and emotionally open. People feel drawn to you right now — let them.'},{icon:'❤️',text:'Love, connection, and intimacy feel more natural and effortless in this phase than any other.'},{icon:'💬',text:'Hard conversations, vulnerable sharing, big declarations — they all land beautifully now.'},{icon:'🌟',text:'Trust your boldness. The confidence you feel is real. Let yourself shine without dimming it.'}], needs:['Deep, meaningful connection — not surface-level small talk','To express yourself boldly — don\'t hold back what you feel','Romance, affection, and being truly seen by someone you love','Celebration of how you feel — don\'t minimise this season'], affirmation:'"I am radiant. I do not have to earn my light — it is already mine."' },
+  { id:'luteal', name:'Turning Inward', days:[18,28], icon:'🌙', color:'#8b78c4', accentColor:'#b4a0e0', bgHeader:'rgba(139,120,196,0.08)', tagBg:'rgba(139,120,196,0.12)', tagBorder:'rgba(139,120,196,0.3)', cycleName:'Luteal', energy:'Slowing down · Your nervous system needs gentleness', moods:['Sensitive','Perceptive','Nesting','Reflective','Anxious at times'], selfNote:'Isabella, this is the phase where things feel heavier and sharper — small things feel bigger, doubts feel louder. That\'s not a character flaw. That\'s biology. You are not "too much." You are navigating a real hormonal shift with grace.', insights:[{icon:'🧠',text:'Your brain is hyper-aware of patterns and unresolved things. This is why things that were fine before suddenly feel urgent.'},{icon:'🏡',text:'You may want to nest — tidy your space, reduce noise, stay in. This is healthy, not antisocial.'},{icon:'😔',text:'Sadness, irritability, or anxiety in this phase is not irrational. Acknowledge it instead of fighting it.'},{icon:'💌',text:'You need more reassurance right now. Asking for it is strength, not neediness.'}], needs:['A calm, ordered environment — clutter genuinely makes it worse','Reassurance and consistency from the people you trust','Permission to say no, slow down, and withdraw without guilt','Extra sleep, magnesium, dark chocolate, and gentle movement'], affirmation:'"This heaviness is temporary. I am not broken — I am human, and I am deeply loved."' },
+];
+
+/* ─── WHEEL BUILD ─── */
+function getPhaseForDay(d) { return phases.find(p => d >= p.days[0] && d <= p.days[1]); }
+function slicePath(cx,cy,r,s,e) {
+  const rad = a => (a-90)*Math.PI/180;
+  const x1=cx+r*Math.cos(rad(s)),y1=cy+r*Math.sin(rad(s));
+  const x2=cx+r*Math.cos(rad(e)),y2=cy+r*Math.sin(rad(e));
+  return `M${cx} ${cy}L${x1} ${y1}A${r} ${r} 0 ${e-s>180?1:0} 1 ${x2} ${y2}Z`;
+}
+const svgEl=document.getElementById('cycleWheel'),CX=100,CY=100,R=95;
+let cum=0;
+const og=document.createElementNS('http://www.w3.org/2000/svg','circle');
+og.setAttribute('cx',CX);og.setAttribute('cy',CY);og.setAttribute('r',R+1);
+og.setAttribute('fill','none');og.setAttribute('stroke','rgba(212,168,67,.18)');og.setAttribute('stroke-width','3');
+svgEl.appendChild(og);
+phases.forEach(ph=>{
+  const span=ph.days[1]-ph.days[0]+1,sd=(cum/28)*360,ed=((cum+span)/28)*360; cum+=span;
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d',slicePath(CX,CY,R,sd,ed));path.setAttribute('fill',ph.color);
+  path.setAttribute('fill-opacity','.78');path.setAttribute('stroke','#0e0c14');path.setAttribute('stroke-width','2');
+  path.classList.add('phase-slice');path.dataset.phase=ph.id;
+  const ma=((sd+ed)/2-90)*Math.PI/180,lr=R*.63,lx=CX+lr*Math.cos(ma),ly=CY+lr*Math.sin(ma);
+  const it=document.createElementNS('http://www.w3.org/2000/svg','text');
+  it.setAttribute('x',lx);it.setAttribute('y',ly-5);it.setAttribute('text-anchor','middle');it.setAttribute('dominant-baseline','central');
+  it.setAttribute('fill','#fff');it.setAttribute('font-size','12');it.setAttribute('pointer-events','none');it.textContent=ph.icon;
+  const nt=document.createElementNS('http://www.w3.org/2000/svg','text');
+  nt.setAttribute('x',lx);nt.setAttribute('y',ly+10);nt.setAttribute('text-anchor','middle');nt.setAttribute('dominant-baseline','central');
+  nt.setAttribute('fill','rgba(255,255,255,.75)');nt.setAttribute('font-size','5.2');nt.setAttribute('font-family','Inter,sans-serif');
+  nt.setAttribute('font-weight','600');nt.setAttribute('pointer-events','none');nt.textContent=ph.cycleName.toUpperCase();
+  svgEl.appendChild(path);svgEl.appendChild(it);svgEl.appendChild(nt);
+});
+const ib=document.createElementNS('http://www.w3.org/2000/svg','circle');
+ib.setAttribute('cx',CX);ib.setAttribute('cy',CY);ib.setAttribute('r',R*.37);ib.setAttribute('fill','#0e0c14');svgEl.appendChild(ib);
+const ibr=document.createElementNS('http://www.w3.org/2000/svg','circle');
+ibr.setAttribute('cx',CX);ibr.setAttribute('cy',CY);ibr.setAttribute('r',R*.37);
+ibr.setAttribute('fill','none');ibr.setAttribute('stroke','rgba(212,168,67,.2)');ibr.setAttribute('stroke-width','1');svgEl.appendChild(ibr);
+
+function renderCard(ph){
+  const card=document.getElementById('phaseCard');
+  card.style.animation='none';card.offsetHeight;card.style.animation='fadeUp .36s ease forwards';
+  card.innerHTML=`
+    <div class="phase-header" style="background:${ph.bgHeader};">
+      <div class="phase-icon-wrap" style="background:${ph.tagBg};border-color:${ph.tagBorder};">${ph.icon}</div>
+      <div>
+        <div class="phase-name" style="color:${ph.accentColor}">${ph.name}</div>
+        <div class="phase-days-tag" style="color:${ph.color};border-color:${ph.tagBorder};background:${ph.tagBg};">Days ${ph.days[0]}–${ph.days[1]} · ${ph.cycleName}</div>
+        <div class="phase-vibe">${ph.energy}</div>
+      </div>
+    </div>
+    <div class="self-note" style="border-left-color:${ph.color};">${ph.selfNote}</div>
+    <div class="phase-body">
+      <div><div class="section-label">How you might feel</div><div class="mood-tags">${ph.moods.map(m=>`<span class="tag" style="background:${ph.tagBg};color:${ph.accentColor};border-color:${ph.tagBorder};">${m}</span>`).join('')}</div></div>
+      <div class="divider"></div>
+      <div><div class="section-label">What's happening inside you</div><div class="insight-list">${ph.insights.map(t=>`<div class="insight-item"><span class="ins-icon">${t.icon}</span><span>${t.text}</span></div>`).join('')}</div></div>
+      <div class="divider"></div>
+      <div><div class="section-label">What you actually need</div><div class="need-list">${ph.needs.map(n=>`<div class="need-item" style="border-left-color:${ph.color};">${n}</div>`).join('')}</div></div>
+      <div class="divider"></div>
+      <div><div class="section-label">Say this to yourself, Isabella</div><div class="affirmation" style="color:${ph.accentColor}">${ph.affirmation}</div></div>
+    </div>`;
+}
+function updateWheel(day){
+  const ph=getPhaseForDay(day);
+  document.getElementById('centerDay').textContent=day;
+  document.getElementById('centerDay').style.color=ph.accentColor;
+  document.getElementById('dayDisplay').textContent=`Day ${day} · ${ph.name}`;
+  document.querySelectorAll('.phase-slice').forEach(el=>{
+    const a=el.dataset.phase===ph.id;el.classList.toggle('active',a);el.setAttribute('fill-opacity',a?'1':'.65');
+  });
+  renderCard(ph);
+  document.querySelectorAll('.nav-pill').forEach(d=>{
+    d.classList.toggle('active',d.dataset.phase===ph.id);
+    d.style.borderColor=d.dataset.phase===ph.id?ph.color:'rgba(255,255,255,.1)';
+    d.style.color=d.dataset.phase===ph.id?ph.accentColor:'';
+  });
+}
+const nav=document.getElementById('phaseNav');
+phases.forEach(p=>{
+  const pill=document.createElement('button');pill.className='nav-pill';pill.dataset.phase=p.id;
+  pill.textContent=`${p.icon} ${p.cycleName}`;
+  pill.addEventListener('click',()=>{document.getElementById('daySlider').value=p.days[0];updateWheel(p.days[0]);});
+  nav.appendChild(pill);
+});
+document.getElementById('daySlider').addEventListener('input',e=>updateWheel(+e.target.value));
+svgEl.addEventListener('click',e=>{const pid=e.target.dataset.phase;if(pid){const p=phases.find(x=>x.id===pid);document.getElementById('daySlider').value=p.days[0];updateWheel(p.days[0]);}});
+updateWheel(1);
+
+/* ─── PERIOD CALCULATOR ─── */
+document.getElementById('lastPeriod').valueAsDate=new Date();
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
+const fmt=d=>d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+const fmtRange=(a,b)=>`${fmt(a)} – ${fmt(b)}`;
+const daysUntil=d=>{const diff=Math.round((d-new Date())/86400000);if(diff===0)return'Today!';if(diff<0)return`${Math.abs(diff)} days ago`;return`In ${diff} day${diff===1?'':'s'}`;};
+const fmtISO=d=>d.toISOString().slice(0,10);
+
+let lastCalcResult = null;
+
+function calculate(){
+  const lpInput=document.getElementById('lastPeriod').value;
+  const cycleLen=parseInt(document.getElementById('cycleLen').value)||28;
+  const periodLen=parseInt(document.getElementById('periodLen').value)||5;
+  if(!lpInput){alert('Please enter the first day of your last period.');return;}
+  const lp=new Date(lpInput+'T00:00:00');
+  const nextPeriodStart=addDays(lp,cycleLen);
+  const nextPeriodEnd=addDays(nextPeriodStart,periodLen-1);
+  const ovDay=addDays(lp,cycleLen-14);
+  const fertS=addDays(ovDay,-5),fertE=addDays(ovDay,1);
+  const pmsS=addDays(ovDay,2),pmsE=addDays(nextPeriodStart,-1);
+  const safe1S=addDays(lp,periodLen),safe1E=addDays(fertS,-1);
+  const safe2S=addDays(fertE,1),safe2E=addDays(pmsS,-1);
+
+  document.getElementById('val-period').textContent=fmtRange(nextPeriodStart,nextPeriodEnd);
+  document.getElementById('note-period').textContent=`${daysUntil(nextPeriodStart)} · ${cycleLen}-day cycle`;
+  document.getElementById('val-fertile').textContent=fmtRange(fertS,fertE);
+  document.getElementById('val-ovulate').textContent=`${fmt(ovDay)}  (${daysUntil(ovDay)})`;
+  document.getElementById('val-pms').textContent=fmtRange(pmsS,pmsE);
+  let safeText='';
+  if(safe1S<=safe1E) safeText+=fmtRange(safe1S,safe1E);
+  if(safe2S<=safe2E){if(safeText)safeText+=' & ';safeText+=fmtRange(safe2S,safe2E);}
+  document.getElementById('val-safe').textContent=safeText||'Varies';
+
+  const rs=document.getElementById('resultsSection');
+  rs.classList.add('visible');rs.style.animation='none';rs.offsetHeight;rs.style.animation='fadeUp .4s ease forwards';
+  buildForecast(lp,cycleLen,periodLen);
+
+  // Store result for saving
+  lastCalcResult = {
+    savedAt: new Date().toISOString(),
+    lastPeriodDate: lpInput,
+    cycleLength: cycleLen,
+    periodDuration: periodLen,
+    nextPeriodStart: fmtISO(nextPeriodStart),
+    nextPeriodEnd: fmtISO(nextPeriodEnd),
+    fertileWindowStart: fmtISO(fertS),
+    fertileWindowEnd: fmtISO(fertE),
+    ovulationDay: fmtISO(ovDay),
+    pmsWindowStart: fmtISO(pmsS),
+    pmsWindowEnd: fmtISO(pmsE),
+  };
+
+  saveToDb(lastCalcResult);
+  setTimeout(()=>rs.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+async function saveToDb(record) {
+  const db = await getDb();
+  if (!db) return;
+  try {
+    await db.collection('calculations').add(record);
+    showToast('✦ Calculation saved to history');
+  } catch(e) {
+    console.warn('DB save failed:', e);
+  }
+}
+
+/* ─── FORECAST ─── */
+function buildForecast(lp,cycleLen,periodLen){
+  const today=new Date();today.setHours(0,0,0,0);
+  const body=document.getElementById('forecastBody');body.innerHTML='';
+  const typeMap={};
+  for(let c=0;c<3;c++){
+    const cs=addDays(lp,c*cycleLen),ov=addDays(cs,cycleLen-14);
+    const fs=addDays(ov,-5),fe=addDays(ov,1),ps=addDays(ov,2),pe=addDays(cs,cycleLen-1);
+    for(let d=0;d<cycleLen;d++){
+      const day=addDays(cs,d),key=fmtISO(day);
+      if(d<periodLen) typeMap[key]='period';
+      else if(day>=fs&&day<=fe) typeMap[key]='fertile';
+      else if(day.toDateString()===ov.toDateString()) typeMap[key]='ovulation';
+      else if(day>=ps&&day<=pe) typeMap[key]='pms';
+      else typeMap[key]='safe';
+    }
+  }
+  const DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const sm=new Date(lp.getFullYear(),lp.getMonth(),1);
+  for(let m=0;m<3;m++){
+    const month=new Date(sm.getFullYear(),sm.getMonth()+m,1);
+    const mName=month.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+    const dim=new Date(month.getFullYear(),month.getMonth()+1,0).getDate();
+    const fdow=month.getDay();
+    const mDiv=document.createElement('div');mDiv.className='forecast-month';
+    const mn=document.createElement('div');mn.className='forecast-month-name';mn.textContent=mName;mDiv.appendChild(mn);
+    const grid=document.createElement('div');grid.className='cal-grid';
+    DAYS.forEach(d=>{const h=document.createElement('div');h.className='cal-day-head';h.textContent=d;grid.appendChild(h);});
+    for(let i=0;i<fdow;i++){const e=document.createElement('div');e.className='cal-day empty';grid.appendChild(e);}
+    for(let d=1;d<=dim;d++){
+      const date=new Date(month.getFullYear(),month.getMonth(),d);
+      const key=fmtISO(date),type=typeMap[key]||'';
+      const cell=document.createElement('div');cell.className='cal-day '+(type||'');
+      if(date.toDateString()===today.toDateString())cell.classList.add('today');
+      cell.textContent=d;cell.title=type?type.charAt(0).toUpperCase()+type.slice(1):'';
+      grid.appendChild(cell);
+    }
+    mDiv.appendChild(grid);
+    if(m<2){const sep=document.createElement('div');sep.style.cssText='height:1px;background:var(--border);margin:.6rem 0;';mDiv.appendChild(sep);}
+    body.appendChild(mDiv);
+  }
+}
+
+/* ─── HISTORY TABLE ─── */
+async function loadHistory() {
+  const body = document.getElementById('historyBody');
+  body.innerHTML = '<div class="history-loading">Loading records…</div>';
+  const db = await getDb();
+  if (!db) {
+    body.innerHTML = '<div class="history-empty">Database unavailable. Calculations are stored locally for this session.</div>';
+    return;
+  }
+  try {
+    const snap = await db.collection('calculations').orderBy('savedAt','desc').limit(50).get();
+    const docs = snap.docs ? snap.docs : [];
+    document.getElementById('historyCount').textContent = docs.length;
+    if (docs.length === 0) {
+      body.innerHTML = '<div class="history-empty">No calculations saved yet. Run the calculator to build your history.</div>';
+      return;
+    }
+    renderTable(docs);
+  } catch(e) {
+    body.innerHTML = '<div class="history-empty">Could not load records.</div>';
+  }
+}
+
+function renderTable(docs) {
+  const body = document.getElementById('historyBody');
+  const fmtShort = s => s ? new Date(s+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '—';
+  const fmtSaved = s => {
+    try { return new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+    catch { return s||'—'; }
+  };
+
+  let html = `<div class="tbl-wrap"><table>
+    <thead><tr>
+      <th>#</th>
+      <th>Saved</th>
+      <th>Last Period</th>
+      <th>Cycle</th>
+      <th>Next Period</th>
+      <th>Fertile Window</th>
+      <th>Ovulation</th>
+      <th>PMS Start</th>
+      <th></th>
+    </tr></thead><tbody>`;
+
+  docs.forEach((doc, i) => {
+    const d = doc.data ? doc.data() : doc;
+    const id = doc.id || doc._id || '';
+    html += `<tr>
+      <td>${docs.length - i}</td>
+      <td class="date-cell">${fmtSaved(d.savedAt)}</td>
+      <td><span class="badge badge-rose">${fmtShort(d.lastPeriodDate)}</span></td>
+      <td>${d.cycleLength||'—'}d / ${d.periodDuration||'—'}d</td>
+      <td><span class="badge badge-rose">${fmtShort(d.nextPeriodStart)}</span></td>
+      <td><span class="badge badge-teal">${fmtShort(d.fertileWindowStart)} – ${fmtShort(d.fertileWindowEnd)}</span></td>
+      <td><span class="badge badge-gold">${fmtShort(d.ovulationDay)}</span></td>
+      <td><span class="badge badge-violet">${fmtShort(d.pmsWindowStart)}</span></td>
+      <td><button class="delete-row" title="Delete" onclick="deleteRecord('${id}', this)">✕</button></td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div>';
+  body.innerHTML = html;
+}
+
+async function deleteRecord(id, btn) {
+  if (!id) return;
+  const db = await getDb();
+  if (!db) return;
+  try {
+    btn.disabled = true; btn.textContent = '…';
+    await db.collection('calculations').doc(id).delete();
+    showToast('Record deleted', '#c47888');
+    loadHistory();
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '✕';
+    showToast('Could not delete record', '#c47888');
+  }
+}
+
+async function clearHistory() {
+  if (!confirm('Clear all saved calculations? This cannot be undone.')) return;
+  const db = await getDb();
+  if (!db) return;
+  try {
+    const snap = await db.collection('calculations').get();
+    const docs = snap.docs || [];
+    for (const doc of docs) {
+      try { await db.collection('calculations').doc(doc.id).delete(); } catch(e){}
+    }
+    showToast('All records cleared', '#c47888');
+    document.getElementById('historyCount').textContent = '0';
+    document.getElementById('historyBody').innerHTML = '<div class="history-empty">No calculations saved yet.</div>';
+  } catch(e) {
+    showToast('Could not clear records', '#c47888');
+  }
+}
+
+// Subscribe to live count updates
+(async () => {
+  const db = await getDb();
+  if (!db) return;
+  db.collection('calculations').onSnapshot(snap => {
+    const count = snap.docs ? snap.docs.length : 0;
+    document.getElementById('historyCount').textContent = count;
+  });
+})();
+</script>
+</body>
+</html>
